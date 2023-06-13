@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
+import model.exceptions.DomainExcepetions;
+
 public class Reservation {
 	
 	public static SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -16,6 +18,9 @@ public class Reservation {
 		}
 
 	public Reservation(Integer roomNumber, Date checkIn, Date checkOut) {
+		if (!checkOut.after(checkIn)) {
+		throw new DomainExcepetions ("Error in reservation: Check-out date must be after check-in"); // JA TRATARÁ A ECEÇÃO NO CONSTRUTOR
+		}
 		this.roomNumber = roomNumber;
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
@@ -42,18 +47,17 @@ public class Reservation {
 		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS); // CONVERTE MILLISECONDS PARA DIAS
 	}
 	
-	public String updateDate(Date checkIn, Date checkOut) { // METODO É FEITO DIRETO
+	public void updateDate(Date checkIn, Date checkOut) { // PROPRIO METODO TRATA A EXEÇÃO COM O T
 		Date now = new Date(); // TRAZ O HORARIO "AGORA"
 		if(checkIn.before(now) || checkOut.before(now)) { // .BEFORE E .AFTER UTILIZA-SE PARA COMPARAR DATAS
-			return "Error in reservation: Reservation dates must be future dates.";
+			throw new DomainExcepetions ("Error in reservation: Reservation dates must be future dates.") ; // AQUI TRATAM O ERRO DIRETO, ESSA EXEÇÃO É DE ARGUMENTOS INVALOS PRO METODO
 		} else if (!checkOut.after(checkIn)) {
-			return "Error in reservation: Check-out date must be after check-in";
-		} else {
+			throw new DomainExcepetions ("Error in reservation: Check-out date must be after check-in") ; // AQUI TRATAM O ERRO DIRETO, ESSA EXEÇÃO É DE ARGUMENTOS INVALOS PRO METODO
+		} 
 		this.checkIn = checkIn;
 		this.checkOut = checkOut;
-		return null;
 		}
-	}
+	
 	@Override
 	public String toString() {
 		return "Reservation: Room "
